@@ -1,0 +1,33 @@
+{
+  "name": "email-verifier",
+  "version": "0.4.1",
+  "description": "The best possible way to verify and validate an email address.",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha --no-timeouts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/whois-api-llc/node-email-verifier.git"
+  },
+  "keywords": [
+    "email",
+    "verify",
+    "verification",
+    "validation",
+    "validate"
+  ],
+  "author": "Randall Degges",
+  "license": "Unlicense",
+  "bugs": {
+    "url": "https://github.com/whois-api-llc/node-email-verifier/issues"
+  },
+  "homepage": "https://github.com/whois-api-llc/node-email-verifier#readme",
+  "dependencies": {
+    "backoff": "^2.5.0",
+    "request": "^2.82.0"
+  },
+  "devDependencies": {
+    "mocha": "^5.2.0"
+  }
+}
