@@ -72,6 +72,8 @@ const login=asyncHandler((async(req,res)=>{
   if(!token){
     return res.status(401).json({message:"Error occurs while generating token",success:false})
   }
+  findUser.token=token;
+  await findUser.save({ validateBeforeSave: false });
   return res.status(200).json({token:token,success:true})
 
 }))
