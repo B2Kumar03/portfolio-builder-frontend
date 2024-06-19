@@ -5,28 +5,33 @@ const projectSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      trime: true,
     },
     projectTitle: {
       type: String,
       required: true,
+      trime: true,
     },
     projectDescription: {
       type: String,
       required: true,
+      trime: true,
     },
     projectImage: {
-        type:String,
-        required:true
+      type: String,
+      required: true,
+      trime: true,
     },
-    email:{
-      type:String,
-      required:true
+    email: {
+      type: String,
+      required: true,
+      trime: true,
     },
-    techstack:[]
+    techstack: [],
   },
   { timestamps: true }
 );
 
-const Project=mongoose.model("Project",projectSchema)
+const Project = mongoose.model("Project", projectSchema);
 
-export default Project
+export default Project;

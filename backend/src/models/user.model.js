@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 const userShema = new mongoose.Schema(
   {
     email: {
@@ -13,18 +13,22 @@ const userShema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      trime: true,
     },
     avtar: {
       type: String,
       required: true,
+      trime: true,
     },
-    password:{
-      type:String,
-      required:true
+    password: {
+      type: String,
+      required: true,
+      trime:true
     },
-    token:{
-      type:String
-    }
+    token: {
+      type: String,
+      trime:true
+    },
   },
   { timestamps: true }
 );
@@ -35,23 +39,23 @@ userShema.pre("save", async function (next) {
   next();
 });
 
-userShema.methods.isPasswordCorrect = async function(password)  {
+userShema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
-userShema.methods.generateAccessToken=async function(){
-   return await jwt.sign(
+userShema.methods.generateAccessToken = async function () {
+  return await jwt.sign(
     {
-        _id:this._id,
-        email:this.email,
-        userName:this.userName
+      _id: this._id,
+      email: this.email,
+      userName: this.userName,
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
-        expiresIn:process.env.ACCESS_TOKEN_EXPIRY
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
     }
-   )
-}
+  );
+};
 
 const User = mongoose.model("User", userShema);
 

@@ -8,7 +8,8 @@ const skillsSchema = new mongoose.Schema(
     },
     email:{
       type:String,
-      required:true
+      required:true,
+      trime:true
     },
     skills: [],
   },
