@@ -3,12 +3,12 @@ import { asyncHandler } from "../utils/asynchandler.js";
 import Skills from "../models/skills.model.js";
 
 const skillsController = asyncHandler(async (req, res) => {
-  const { skills } = req.body;
+  const { skills,email } = req.body;
   
   if (!skills) {
     return res.status(400).json({ message: "Please provide skills" });
   }
-  const r = await Skills.create({ skills });
+  const r = await Skills.create({ skills,email });
   if(!r){
     return res.status(400).json({ message: "Failed to create skills" });
   }
