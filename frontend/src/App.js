@@ -10,12 +10,12 @@ function App() {
     <container>
       <Navbar />
       </container>
-    <div class="max-w-[1320px] grid grid-cols-2 mx-auto ">
+    <div class="max-w-[1320px] grid  sm:grid-cols-3 grid-cols-1 sm:mx-auto gap-10 ">
       
-      <container>
+      <container >
       <Sidenavbar />
       </container>
-      <container>
+      <container class="sm:col-span-2">
       <Allroutes />
       </container>
     </div>
