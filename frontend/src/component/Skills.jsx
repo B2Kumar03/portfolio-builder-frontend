@@ -1,9 +1,9 @@
 import React from 'react'
 import { MdOutlineCloudDone } from "react-icons/md";
 import { MdOutlineEdit } from "react-icons/md";
-const PersonalDetails = () => {
+const Skills = () => {
   return (
-    <div className='border bg-[white] p-10 rounded-lg grid gap-5 grid-cols-1'>
+    <div className='border bg-[#ef4e4e] p-10 rounded-lg grid gap-5 grid-cols-1'>
       <div>
         <div className='font-bold text-[18px] flex gap-2 items-center'>
           <div className='text-[#3F83F8]'>Personal Details</div>
@@ -70,4 +70,4 @@ const PersonalDetails = () => {
   )
 }
 
-export default PersonalDetails
+export default Skills
