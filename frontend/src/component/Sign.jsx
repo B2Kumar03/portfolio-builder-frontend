@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import BackdropExample from "./BackdropExample";
-import { useDisclosure } from "@chakra-ui/react";
+import { Toast, useDisclosure, useToast } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { otpUpdater } from "../redux/OTP/actionCreator";
 import { addData } from "../redux/SignInData/actionCreator";
+import { LoginModal } from "./LoginModal";
 
 export const Sign = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen:isOpen1, onOpen:onOpen1, onClose:onClose1 } = useDisclosure();
   const [signData, setSignData] = useState({
     userName: "",
     email: "",
@@ -17,6 +19,7 @@ export const Sign = () => {
   const dispatch = useDispatch();
   const state = useSelector((state) => state.OTP);
   const state1 = useSelector((state) => state.signIn);
+  const toast=useToast()
   console.log(state1);
   async function submit(e) {
     e.preventDefault();
@@ -33,10 +36,25 @@ export const Sign = () => {
     }
   }
 
+  //toast 
+
+  function notification(){
+    
+      toast({
+        title: 'Account created.',
+        description: "We've created your account for you.",
+        status: 'success',
+        duration: 9000,
+        isClosable: true,
+        position: 'top-right'
+      })
+    
+  }
+
   return (
     <div className="md:max-w-[40%] border mx-auto p-10 grid grid-cols-1 mt-5 ">
       <div className=" md:text-[25px] text-[20px] font-bold text-center 0">
-        Sign/Register
+        Register
       </div>
       <div>
         <form action="" onSubmit={submit}>
@@ -97,8 +115,12 @@ export const Sign = () => {
           />
           <input type="submit" value="Continue" />
         </form>
+        <button onClick={()=>onOpen1()}>Login</button>
+        <button onClick={()=>notification()}>Open notifincation</button>
       </div>
       <BackdropExample isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
+      <LoginModal isOpen={isOpen1} onOpen={onOpen1} onClose={onClose1}/>
+
     </div>
   );
 };
