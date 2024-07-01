@@ -12,7 +12,6 @@ function App() {
       <Navbar />
       </container>
     <div class="max-w-[1320px] grid  sm:grid-cols-3 grid-cols-1 sm:mx-auto gap-10 ">
-      
       <container >
       <Sidenavbar />
       </container>

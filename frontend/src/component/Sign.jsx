@@ -52,7 +52,7 @@ export const Sign = () => {
   }
 
   return (
-    <div className="md:max-w-[40%] border mx-auto p-10 grid grid-cols-1 mt-5 ">
+    <div className="md:max-w-[40%] border mx-auto p-10 grid grid-cols-1 mt-5 pb-20 ">
       <div className=" md:text-[25px] text-[20px] font-bold text-center 0">
         Register
       </div>
@@ -113,10 +113,17 @@ export const Sign = () => {
               });
             }}
           />
-          <input type="submit" value="Continue" />
+          <input type="submit" value="Continue" className="w-[100%] bg-[#3F83F8] p-3 rounded-lg text-[white] font-semibold"/>
         </form>
-        <button onClick={()=>onOpen1()}>Login</button>
-        <button onClick={()=>notification()}>Open notifincation</button>
+       
+       
+       <div className="text-[18px] text-center mt-3">
+       <span>Already have an accound?</span>
+       <button onClick={()=>onOpen1()} className="text-[#3F83F8]">Login</button>
+       </div>
+     
+       
+       
       </div>
       <BackdropExample isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
       <LoginModal isOpen={isOpen1} onOpen={onOpen1} onClose={onClose1}/>
