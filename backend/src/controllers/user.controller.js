@@ -17,10 +17,11 @@ const registerUser = asyncHandler(async (req, res) => {
       .json({ message: "With this email user already exist", success: false });
   }
   const localPathFile = req.file?.path;
+  
   if (!localPathFile) {
     return res
       .status(201)
-      .json({ message: "avter is required", success: false });
+      .json({ message: "avtar is required", success: false });
   }
   const cloudinaryURL = await cloudinaryUpload(localPathFile);
   if (!cloudinaryURL.url) {
@@ -78,4 +79,14 @@ const login=asyncHandler((async(req,res)=>{
 
 }))
 
-export { registerUser,login };
+const getUser=asyncHandler(async(req,res)=>{
+  const user=await User.findById(req.user._id).select("-password -token")
+  if(!user){
+    return res.status(404).json({message:"User not found",success:false})
+  }
+  return res.status(200).json({user:user,success:true})
+})
+
+
+
+export { registerUser,login,getUser };

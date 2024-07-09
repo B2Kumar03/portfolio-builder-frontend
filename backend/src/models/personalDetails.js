@@ -31,6 +31,11 @@ const pesonalDetailsSchema = new mongoose.Schema(
       required: true,
       trime: true,
     },
+    summary:{
+      type: String,
+      required: true,
+      trime: true,
+    },
     location: {
       type: String,
       required: true,

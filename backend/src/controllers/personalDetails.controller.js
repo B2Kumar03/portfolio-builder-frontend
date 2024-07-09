@@ -5,10 +5,11 @@ import { asyncHandler } from "../utils/asynchandler.js";
 // @route   POST /api/personalDetails
 // @access  Public
 const updatePersonalDetails = asyncHandler(async (req, res) => {
-  const { fullName, phoneNumber, email, linkedIn, github, location } = req.body;
+  const { fullName, phoneNumber, email, linkedIn, github, location, summary } =
+    req.body;
 
   // Check if all required fields are provided
-  if (!fullName || !phoneNumber || !email || !github || !location) {
+  if (!fullName || !phoneNumber || !email || !github || !location || !summary) {
     return res
       .status(400)
       .json({ success: false, msg: "Please fill all the required fields" });
@@ -22,7 +23,9 @@ const updatePersonalDetails = asyncHandler(async (req, res) => {
       // If details exist, update them
       personalDetails = await PersonalDetails.findOneAndUpdate(
         { email },
-        { $set: { fullName, phoneNumber, linkedIn, github, location } },
+        {
+          $set: { fullName, phoneNumber, linkedIn, github, location, summary },
+        },
         { new: true }
       );
 
@@ -40,7 +43,7 @@ const updatePersonalDetails = asyncHandler(async (req, res) => {
         linkedIn,
         github,
         location,
-        userId:"66698a3b044f84b71e243577"
+        summary,
       });
 
       return res.status(201).json({
@@ -50,10 +53,25 @@ const updatePersonalDetails = asyncHandler(async (req, res) => {
       });
     }
   } catch (err) {
-    return res
-      .status(400)
-      .json({ success: false, msg: "Something went wrong", error: err.message });
+    return res.status(400).json({
+      success: false,
+      msg: "Something went wrong",
+      error: err.message,
+    });
   }
 });
+const getPersonalDetails = async (req, res) => {
+  try {
+    const personalDetails = await PersonalDetails.findOne({
+      email: req.user.email,
+    });
+    if (!personalDetails) {
+      res.status(200).json({ message: "invalid user", success: false });
+    }
+    res.status(200).json({ data: personalDetails, success: true });
+  } catch (error) {
+    res.json(500).json({ message: error, success: false });
+  }
+};
 
-export default updatePersonalDetails;
+export {updatePersonalDetails,getPersonalDetails};
