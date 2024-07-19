@@ -3,8 +3,18 @@ import mongoose from "mongoose";
 const projectSchema = new mongoose.Schema(
   {
     userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      type: String,
+      required: true,
+      trime: true,
+    },
+    demoLink: {
+      type: String,
+      required: true,
+      trime: true,
+    },
+    githubLink: {
+      type: String,
+      required: true,
       trime: true,
     },
     projectTitle: {
@@ -18,11 +28,6 @@ const projectSchema = new mongoose.Schema(
       trime: true,
     },
     projectImage: {
-      type: String,
-      required: true,
-      trime: true,
-    },
-    email: {
       type: String,
       required: true,
       trime: true,

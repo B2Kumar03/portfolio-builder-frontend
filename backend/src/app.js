@@ -14,7 +14,7 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 
 app.use("/api/v1/users", userRouter);//ad
-app.use("/api/v1/users/",projectRouter)
+app.use("/api/v1/users",projectRouter)
 app.use("/api/v1/users",personalDatilsRoutes)
 app.use("/api/v1/users",skills)
 app.use("/api/v1/users",otpSender)

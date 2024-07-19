@@ -6,7 +6,7 @@ import accessAuthMiddleware from "../middlewares/accessAuth.middleware.js"
 
 const projectRouter=Router()
 
-projectRouter.route("/project").post(authMiddleware,upload.single("projectImage"),project)
+projectRouter.route("/project").post(upload.single("projectImage"),project)
 projectRouter.route("/get-project").get(accessAuthMiddleware,getProject)
 
 export default projectRouter

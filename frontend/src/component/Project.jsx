@@ -5,48 +5,271 @@ import {
   AccordionItem,
   AccordionPanel,
   Box,
+  Checkbox,
+  RadioGroup,
+  useToast,
 } from "@chakra-ui/react";
-import React from "react";
+import axios from "axios";
+import React, { useState } from "react";
 import { MdOutlineCloudDone } from "react-icons/md";
-import { MdOutlineEdit } from "react-icons/md";
+import { useSelector } from "react-redux";
+
+const projectData = [1];
+
 const Projects = () => {
+  const state = useSelector((state) => state.signIn);
+  const toast = useToast();
+  const [loading, setLoading] = useState(false);
+  const [skills, setSkills] = useState([]);
+  const [projectDat, setProjectDat] = useState({
+    userId: state.data.user.email,
+    projectTitle: "",
+    projectDescription: "",
+    demoLink: "",
+    githubLink: "",
+    projectImage: null,
+    techstack: [],
+  });
+
+  const showSuccessNotification = () => {
+    toast({
+      title: "Project details saved successfully",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+      position: "top-right",
+    });
+  };
+
+  const showErrorNotification = () => {
+    toast({
+      title: "Invalid Credential",
+      description: "Something went wrong",
+      status: "error",
+      duration: 5000,
+      isClosable: true,
+      position: "top-right",
+    });
+  };
+
+  const handleCheckboxChange = (e) => {
+    const skill = e.target.value;
+    if (e.target.checked) {
+      setSkills((prevSkills) => [...prevSkills, skill]);
+    } else {
+      setSkills((prevSkills) =>
+        prevSkills.filter((skillItem) => skillItem !== skill)
+      );
+    }
+    setProjectDat((prevData) => ({
+      ...prevData,
+      techstack: [...skills, skill],
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("Submit data", projectDat);
+    const formData = new FormData();
+    formData.append("userId", state.data.user.email);
+    formData.append("projectTitle", projectDat.projectTitle);
+    formData.append("projectDescription", projectDat.projectDescription);
+    formData.append("demoLink", projectDat.demoLink);
+    formData.append("githubLink", projectDat.githubLink);
+    formData.append("projectImage", projectDat.projectImage);
+    formData.append("techstack", projectDat.techstack);
+
+    setLoading(true);
+    try {
+      const { data } = await axios.post(
+        "http://localhost:8080/api/v1/users/project",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log(data);
+      showSuccessNotification();
+    } catch (error) {
+      console.log(error);
+      showErrorNotification();
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="border bg-[white] p-10 rounded-lg grid gap-5 grid-cols-1">
-      <div>
-        <div className="font-bold text-[18px] flex gap-2 items-center">
-          <div className="text-[#3F83F8]">Projects</div>
-          <div className="text-[15px] font-medium text-[#ccc] ">Saved</div>
-          <div className="text-[15px]">
-            <MdOutlineCloudDone />
-          </div>
+    <>
+      <div className="font-bold text-[18px] flex gap-2 items-center">
+        <div className="text-[#3F83F8]">Projects</div>
+        <div className="text-[15px] font-medium text-[#ccc]">Saved</div>
+        <div className="text-[15px]">
+          <MdOutlineCloudDone />
         </div>
       </div>
 
-      <Accordion allowToggle outline={"none"} className="border rounded-md"> 
-        <AccordionItem>
-          <h2>
-            <AccordionButton>
-              <Box as="span" flex="1" textAlign="left">
-                Project 1
-              </Box>
-              <AccordionIcon />
-            </AccordionButton>
-          </h2>
-          <AccordionPanel pb={4}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat.
-          </AccordionPanel>
-        </AccordionItem>
-      </Accordion>
+      {projectData.map((project, index) => (
+        <div
+          key={index}
+          className="bg-[white] p-2 rounded-lg grid gap-1 grid-cols-1"
+        >
+          <Accordion
+            allowToggle
+            outline={"none"}
+            className="border rounded-md duration-1000"
+          >
+            <AccordionItem>
+              <h2>
+                <AccordionButton>
+                  <Box as="span" flex="1" textAlign="left">
+                    {index}
+                  </Box>
+                  <AccordionIcon />
+                </AccordionButton>
+              </h2>
+              <AccordionPanel pb={4}>
+                <div>
+                  <label>Project title</label>
+                  <input
+                    type="text"
+                    className="w-[100%] border-2 rounded-lg h-[45px] p-2"
+                    value={projectDat.projectTitle}
+                    onChange={(e) =>
+                      setProjectDat({
+                        ...projectDat,
+                        projectTitle: e.target.value,
+                      })
+                    }
+                  />
+                </div>
 
-      <div className=" border-3 p-2 mt-5 flex place-content-end">
-        <button className="bg-[#3F83F8] border-3 p-4 mt-5 place-content-end tex-[20px] font-bold text-[white] rounded-lg">
+                <div>
+                  <label>Project description</label>
+                  <textarea
+                    className="w-[100%] border-2 rounded-lg h-[170px] p-5"
+                    value={projectDat.projectDescription}
+                    onChange={(e) =>
+                      setProjectDat({
+                        ...projectDat,
+                        projectDescription: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                <div className="mt-3">
+                  <label>Project deployed link</label>
+                  <input
+                    type="url"
+                    placeholder="https://app.com"
+                    className="w-[100%] border-2 rounded-lg h-[45px] p-2"
+                    value={projectDat.demoLink}
+                    onChange={(e) =>
+                      setProjectDat({ ...projectDat, demoLink: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div className="mt-3">
+                  <label>Project GitHub link</label>
+                  <input
+                    type="url"
+                    placeholder="http://githubid/projectrepo"
+                    className="w-[100%] border-2 rounded-lg h-[45px] p-2"
+                    value={projectDat.githubLink}
+                    onChange={(e) =>
+                      setProjectDat({
+                        ...projectDat,
+                        githubLink: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                <div className="mt-3">
+                  <label>Choose an image of your project</label>
+                  <input
+                    type="file"
+                    className="w-[100%] border-2 rounded-lg h-[45px] p-2"
+                    onChange={(e) =>
+                      setProjectDat({
+                        ...projectDat,
+                        projectImage: e.target.files[0],
+                      })
+                    }
+                  />
+                </div>
+
+                <div className="mt-5">
+                  <label className="text-[#555ee7]">Tech stack</label>
+                  <RadioGroup className="grid grid-cols-3 mt-4 gap-4">
+                    {[
+                      "HTML",
+                      "CSS",
+                      "JavaScript",
+                      "TypeScript",
+                      "MongoDB",
+                      "Express.js",
+                      "React.js",
+                      "Node.js",
+                      "Angular",
+                      "Vue.js",
+                      "Next.js",
+                      "Bootstrap",
+                      "Tailwind CSS",
+                      "Sass/SCSS",
+                      "jQuery",
+                      "Redux",
+                      "GraphQL",
+                      "Apollo",
+                      "Firebase",
+                      "AWS",
+                      "Docker",
+                      "Git",
+                      "Webpack",
+                      "Babel",
+                      "ESLint",
+                      "Jest",
+                      "Mocha",
+                      "Cypress",
+                      "REST APIs",
+                      "Microservices",
+                    ].map((tech, idx) => (
+                      <Checkbox
+                        key={idx}
+                        colorScheme="green"
+                        value={tech}
+                        isChecked={skills.includes(tech)}
+                        onChange={handleCheckboxChange}
+                      >
+                        {tech}
+                      </Checkbox>
+                    ))}
+                  </RadioGroup>
+                </div>
+
+                <div className="flex justify-end duration-700">
+                  <button
+                    className="border p-2 bg-[#3F83F8] text-[white] font-bold mt-5 rounded-md hover:bg-[white] duration-700 hover:text-[black]"
+                    onClick={handleSubmit}
+                  >
+                    {loading ? "Saving..." : "Save"}
+                  </button>
+                </div>
+              </AccordionPanel>
+            </AccordionItem>
+          </Accordion>
+        </div>
+      ))}
+
+      <div className="border-3 p-2 mt-5 flex place-content-end">
+        <button className="bg-[#3F83F8] border-3 p-4 mt-5 tex-[20px] font-bold text-[white] rounded-lg">
           Continue
         </button>
       </div>
-    </div>
+    </>
   );
 };
 

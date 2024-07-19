@@ -53,6 +53,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
 const login=asyncHandler((async(req,res)=>{
   const{email,password}=req.body
+  console.log(email);
   if(!email||!password){
     return res.status(401).json({message:"Email and password is required",success:false})
   }
@@ -90,3 +91,5 @@ const getUser=asyncHandler(async(req,res)=>{
 
 
 export { registerUser,login,getUser };
+
+
