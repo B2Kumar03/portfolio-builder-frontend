@@ -6,6 +6,7 @@ import skills from "./routes/skills.routes.js"
 import otpSender from "./routes/otpSender.controller.js"
 import cors from "cors"
 import aiRouter from "./routes/ai.routes.js";
+import resumeRoute from "./routes/resumeUploader.routes.js";
 const app = express();
 
 app.use(cors())
@@ -21,5 +22,7 @@ app.use("/api/v1/users",otpSender)
 
 
 app.use("/api/v1/users",aiRouter)
+
+app.use("/api/v1/users",resumeRoute)
 
 export default app;
