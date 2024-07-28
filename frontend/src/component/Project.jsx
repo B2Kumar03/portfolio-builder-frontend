@@ -6,7 +6,9 @@ import {
   AccordionPanel,
   Box,
   Checkbox,
+  Flex,
   RadioGroup,
+  Spinner,
   useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
@@ -19,6 +21,7 @@ const Projects = () => {
   const toast = useToast();
   const [projectData, setProjectData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loading1,setLoading1]=useState(false)
   const [skills, setSkills] = useState([]);
   const [getProject, setGetProject] = useState([]);
   const [update,setUdate]=useState(false)
@@ -35,6 +38,7 @@ const Projects = () => {
   async function fetchProject() {
     const token = JSON.parse(localStorage.getItem("token"));
     console.log(token);
+    setLoading1((prev)=>!prev)
     try {
       const { data } = await axios.get(
         "http://localhost:8080/api/v1/users/get-project",
@@ -46,9 +50,13 @@ const Projects = () => {
       );
       
       setGetProject(data.data);
+      setLoading1((prev)=>!prev)
+      setProjectData([])
       console.log(getProject);
     } catch (error) {
       console.log("project", error);
+      setLoading((prev)=>!prev)
+
     }
   }
 
@@ -131,6 +139,7 @@ const Projects = () => {
           },
         }
       );
+      fetchProject()
       setUdate((prev)=>!prev)
       showSuccessNotification();
     } catch (error) {
@@ -168,6 +177,17 @@ const Projects = () => {
       setLoading(false);
     }
   };
+  if(loading1){
+    return <Flex justify="center" align="center" height="100vh">
+    <Spinner
+      thickness="4px"
+      speed="0.65s"
+      emptyColor="gray.200"
+      color="blue.500"
+      size="xl"
+    />
+  </Flex>
+  }
 
   return (
     <>
