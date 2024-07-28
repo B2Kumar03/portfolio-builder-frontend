@@ -35,10 +35,12 @@ const Sidenavbar = () => {
         <div className='font-bold'>Skills</div>
       </div>
       </Link>  
+      <Link to="/upload-resume">
       <div className='flex gap-2 items-center hover:drop-shadow-2xl hover:cursor-pointer  p-[15px] border rounded-md duration-700'>
         <div className='rounded-full p-[10px] bg-[#5992e8]'><GoUpload/></div>
-        <div className='font-bold'>Upload Resume</div>
+        <div className='font-bold' >Upload Resume</div>
       </div>
+      </Link>
       <div>
         <button className="border p-2 bg-[#075df0] mt-20 text-[white] font-semibold rounded-md text-[20px] hover:shadow-xl duration-300">Generate portfolio </button>
       </div>

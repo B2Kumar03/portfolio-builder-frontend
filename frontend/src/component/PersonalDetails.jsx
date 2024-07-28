@@ -33,10 +33,10 @@ const PersonalDetails = () => {
         personalDetails
       );
       setLoading((prev) => !prev);
-      if (!data.success) {
-        console.log(data.message);
-        alert(data.message);
-      }
+      // if (!data.data.success) {
+      //   console.log(data.message);
+      //   alert(data.message);
+      // }
       showSuccessNotification();
     } catch (error) {
       setLoading((prev) => !prev);
@@ -80,9 +80,9 @@ const PersonalDetails = () => {
         }
       );
       console.log(data);
-      if (!data.success) {
+      if (!data.data.success) {
         console.log(data.message);
-        alert(data.message);
+        
       }
       console.log(data.data.email);
 

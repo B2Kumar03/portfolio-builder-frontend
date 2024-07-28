@@ -1,73 +1,182 @@
-import React from 'react'
+import React, { useState, useEffect } from "react";
+import { useToast } from "@chakra-ui/react";
+import { useSelector } from "react-redux";
+import axios from "axios";
 import { MdOutlineCloudDone } from "react-icons/md";
-import { MdOutlineEdit } from "react-icons/md";
+
+const techStackIcons = {
+  HTML: "https://www.vectorlogo.zone/logos/w3_html5/w3_html5-icon.svg",
+  CSS: "https://www.vectorlogo.zone/logos/w3_css/w3_css-icon.svg",
+  JavaScript: "https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg",
+  TypeScript: "https://www.vectorlogo.zone/logos/typescriptlang/typescriptlang-icon.svg",
+  MongoDB: "https://www.vectorlogo.zone/logos/mongodb/mongodb-icon.svg",
+  Express: "https://www.vectorlogo.zone/logos/expressjs/expressjs-icon.svg",
+  React: "https://www.vectorlogo.zone/logos/reactjs/reactjs-icon.svg",
+  Node: "https://www.vectorlogo.zone/logos/nodejs/nodejs-icon.svg",
+  Angular: "https://www.vectorlogo.zone/logos/angular/angular-icon.svg",
+  Vue: "https://www.vectorlogo.zone/logos/vuejs/vuejs-icon.svg",
+  Next: "https://raw.githubusercontent.com/B2Kumar03/-1Nextjs-application/68ac048593c6fc3d13c22c744741d7d7df07e492/public/next.svg",
+  Bootstrap: "https://www.vectorlogo.zone/logos/getbootstrap/getbootstrap-icon.svg",
+  Tailwind: "https://www.vectorlogo.zone/logos/tailwindcss/tailwindcss-icon.svg",
+  Sass: "https://www.vectorlogo.zone/logos/sass-lang/sass-lang-icon.svg",
+  jQuery: "https://www.vectorlogo.zone/logos/jquery/jquery-icon.svg",
+  Redux: "https://raw.githubusercontent.com/devicons/devicon/master/icons/redux/redux-original.svg",
+  GraphQL: "https://www.vectorlogo.zone/logos/graphql/graphql-icon.svg",
+  Apollo: "https://www.vectorlogo.zone/logos/apollographql/apollographql-icon.svg",
+  Firebase: "https://www.vectorlogo.zone/logos/firebase/firebase-icon.svg",
+  AWS: "https://www.vectorlogo.zone/logos/amazon_aws/amazon_aws-icon.svg",
+  Docker: "https://www.vectorlogo.zone/logos/docker/docker-icon.svg",
+  Git: "https://www.vectorlogo.zone/logos/git-scm/git-scm-icon.svg",
+  Webpack: "https://webpack.js.org/site-logo.c0e60df418e04f58.svg",
+  Babel: "https://www.vectorlogo.zone/logos/babeljs/babeljs-icon.svg",
+  ESLint: "https://www.vectorlogo.zone/logos/eslint/eslint-icon.svg",
+  Jest: "https://www.vectorlogo.zone/logos/jestjsio/jestjsio-icon.svg",
+  Mocha: "https://www.vectorlogo.zone/logos/mochajs/mochajs-icon.svg",
+  Cypress: "https://www.cypress.io/_astro/navbar-brand.D87396b0.svg",
+  Postman: "https://www.vectorlogo.zone/logos/getpostman/getpostman-icon.svg",
+};
+
 const Skills = () => {
-  return (
-    <div className='border bg-[#ef4e4e] p-10 rounded-lg grid gap-5 grid-cols-1'>
-      <div>
-        <div className='font-bold text-[18px] flex gap-2 items-center'>
-          <div className='text-[#3F83F8]'>Personal Details</div>
-          <div className='text-[15px] font-medium text-[#ccc] ' >Saved</div>
-          <div className='text-[15px]'><MdOutlineCloudDone/></div>
-        </div>
-      </div>
-      <div>
-        <div className='w-[100px] w-[100px] rounded-full relative'>
+  const state = useSelector((state) => state.signIn);
+  const toast = useToast();
+  const [selectedSkills, setSelectedSkills] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("Frontend");
+
+  useEffect(() => {
+    const fetchSkills = async () => {
+      const token = JSON.parse(localStorage.getItem("token"));
+      try {
+        const { data } = await axios.get("http://localhost:8080/api/v1/users/get-skill", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setSelectedSkills(data.skills.skillsName);
+        console.log(data.skills.skillsName);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to fetch skills",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
+      }
+    };
+
+    fetchSkills();
+  }, []);
+
+  const handleCheckboxChange = (e) => {
+    const skill = e.target.value;
+    setSelectedSkills((prevSkills) =>
+      prevSkills.includes(skill)
+        ? prevSkills.filter((s) => s !== skill)
+        : [...prevSkills, skill]
+    );
+  };
+
+  const handleSubmit = async () => {
+    const token = JSON.parse(localStorage.getItem("token"));
+    const skillsUrl = selectedSkills.map((skill) => techStackIcons[skill]);
+      console.log(selectedSkills);
+    try {
+      await axios.post(
+        "http://localhost:8080/api/v1/users/skills",
+        {
+          skillsUrl,
+          skillsName: selectedSkills,
+          role:selectedCategory
           
-        <div className="relative">
-      <label
-        htmlFor="file-upload"
-        className="absolute top-[50px] left-20 rounded-full bg-white p-2 text-black cursor-pointer"
-        style={{ display: 'inline-block' }}
-      >
-        <MdOutlineEdit/>
-      </label>
-      <input
-        id="file-upload"
-        type="file"
-        className="absolute top-[50px] left-20 rounded-full bg-[white] p-2 text-[white] outline-none opacity-0 w-0 h-0"
-      />
-    </div>
-          <figure >
-            <img className='w-[100px] w-[100px] rounded-full ' src="https://masai-resume-builder-user-data.s3.ap-south-1.amazonaws.com/test/profile-image/6557791b2bea09fa16045e4f/la2t.jpg" alt="" />
-          </figure>
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      toast({
+        title: "Skills saved successfully",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "top-right",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save skills",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-right",
+      });
+    }
+  };
+
+  return (
+    <div className="border p-10 rounded-lg grid gap-5 grid-cols-1">
+      <div>
+        <div className="font-bold text-[18px] flex gap-2 items-center">
+          <div className="text-[#3F83F8]">Personal Details</div>
+          <div className="text-[15px] font-medium text-[#ccc]">Saved</div>
+          <div className="text-[15px]">
+            <MdOutlineCloudDone />
+          </div>
         </div>
       </div>
       <div>
-        <p>Full name</p>
-        <input className='w-[100%] border-2 rounded-lg h-[45px] p-2' type="text" />
+        <label htmlFor="">Select Role :</label>
+        <select
+          
+          className="border p-2 rounded-lg ml-5 max-w-[1000px]"
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+        >
+          <option value="Frontend">Frontend</option>
+          <option value="Backend">Backend</option>
+          <option value="MERN">MERN</option>
+        </select>
       </div>
       <div>
-      <p>Professional summary</p>
-      <textarea type="" className='w-[100%] border-2 rounded-lg h-[100px] p-5'  />
+        <div className="grid grid-cols-3 gap-4">
+          {Object.keys(techStackIcons).map((tech) => (
+            <div key={tech} className="flex items-center">
+              <input
+                type="checkbox"
+                value={tech}
+                onChange={handleCheckboxChange}
+                checked={selectedSkills.includes(tech)}
+              />
+              <img src={techStackIcons[tech]} alt={tech} className="w-6 h-6 ml-2" />
+              <label className="ml-2">{tech}</label>
+            </div>
+          ))}
+        </div>
       </div>
-      <div>
-      <p>Phone Number</p>
-      <input className='w-[100%] border-2 rounded-lg h-[45px] p-2' type="number" />
+      <div className="mt-5">
+        <h3 className="text-lg font-bold">Selected Skills</h3>
+        <div className="flex gap-2 mt-2">
+          {selectedSkills.map((skill) => (
+            <div className="border rounded-md p-5">
+              <img key={skill} src={techStackIcons[skill]} alt={skill} className="w-8 h-8" />
+              <p>{skill}</p>
+            </div>
+            
+          ))}
+        </div>
       </div>
-      <div>
-      <p>Email</p>
-      <input className='w-[100%] border-2 rounded-lg h-[45px] p-2' type="email" />
-      </div>
-      <div>
-      <p>Linkedin</p>
-      <input className='w-[100%] border-2 rounded-lg h-[45px] p-2' type="text" />
-      </div>
-      <div>
-        <p>Github</p>
-        <input className='w-[100%] border-2 rounded-lg h-[45px] p-2' type="text" />
-      </div>
-      <div>
-        <p>Location</p>
-        <input className='w-[100%] border-2 rounded-lg h-[45px] p-2' type="text" />
-      </div>
-      <div className=' border-3 p-2 mt-5 flex place-content-end'>
-        <button className='bg-[#3F83F8] border-3 p-4 mt-5 place-content-end tex-[20px] font-bold text-[white] rounded-lg'>
-          Continue
+      <div className="border-3 p-2 mt-5 flex place-content-end">
+        <button
+          onClick={handleSubmit}
+          className="bg-[#3F83F8] border-3 p-4 mt-5 tex-[20px] font-bold text-[white] rounded-lg"
+        >
+          Save Skills
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Skills
+export default Skills;

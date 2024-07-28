@@ -118,7 +118,7 @@ export const Sign = () => {
        
        
        <div className="text-[18px] text-center mt-3">
-       <span>Already have an accound?</span>
+       <span>Already have an account?</span>
        <button onClick={()=>onOpen1()} className="text-[#3F83F8]">Login</button>
        </div>
      
