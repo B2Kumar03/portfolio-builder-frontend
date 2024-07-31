@@ -69,9 +69,9 @@ function BackdropExample({ isOpen, onOpen, onClose }) {
       formData.append("userName", state1.data.userName);
       formData.append("email", state1.data.email);
       formData.append("password", state1.data.password);
-      console.log(state1.data.avtar);
+      
       const { data } = await axios.post(
-        "http://localhost:8080/api/v1/users/register",
+        "https://porifolio-builder-backend-1.onrender.com/api/v1/users/register",
         formData,
         {
         headers: {

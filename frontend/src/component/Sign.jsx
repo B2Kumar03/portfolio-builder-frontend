@@ -25,7 +25,7 @@ export const Sign = () => {
     e.preventDefault();
     try {
       const { data } = await axios.post(
-        "http://localhost:8080/api/v1/users/send-otp",
+        "https://porifolio-builder-backend-1.onrender.com/api/v1/users/send-otp",
         { email: signData.email }
       );
       dispatch(otpUpdater(data.opt));

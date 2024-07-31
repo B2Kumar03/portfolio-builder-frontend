@@ -5,6 +5,7 @@ import {
   AccordionItem,
   AccordionPanel,
   Box,
+  Button,
   Checkbox,
   Flex,
   RadioGroup,
@@ -14,17 +15,22 @@ import {
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { MdOutlineCloudDone } from "react-icons/md";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { update_project } from "../redux/isFilled/actionCreator";
+import { Link } from "react-router-dom";
 
 const Projects = () => {
   const state = useSelector((state) => state.signIn);
   const toast = useToast();
   const [projectData, setProjectData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [loading1,setLoading1]=useState(false)
+  const [loading1, setLoading1] = useState(false);
   const [skills, setSkills] = useState([]);
   const [getProject, setGetProject] = useState([]);
-  const [update,setUdate]=useState(false)
+  const [update, setUdate] = useState(false);
+  const state1=useSelector((state)=>state.isFilled)
+  const dispatch=useDispatch()
+
   const [projectDat, setProjectDat] = useState({
     userId: state.data.user.email,
     projectTitle: "",
@@ -37,26 +43,27 @@ const Projects = () => {
 
   async function fetchProject() {
     const token = JSON.parse(localStorage.getItem("token"));
-    console.log(token);
-    setLoading1((prev)=>!prev)
+   
+    setLoading1((prev) => !prev);
     try {
       const { data } = await axios.get(
-        "http://localhost:8080/api/v1/users/get-project",
+        "https://porifolio-builder-backend-1.onrender.com/api/v1/users/get-project",
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      
+      if(data.data){
+        dispatch(update_project())
+      }
       setGetProject(data.data);
-      setLoading1((prev)=>!prev)
-      setProjectData([])
-      console.log(getProject);
+      setLoading1((prev) => !prev);
+      setProjectData([]);
+  
     } catch (error) {
       console.log("project", error);
-      setLoading((prev)=>!prev)
-
+      setLoading((prev) => !prev);
     }
   }
 
@@ -131,7 +138,7 @@ const Projects = () => {
     setLoading(true);
     try {
       const { data } = await axios.post(
-        "http://localhost:8080/api/v1/users/project",
+        "https://porifolio-builder-backend-1.onrender.com/api/v1/users/project",
         formData,
         {
           headers: {
@@ -139,8 +146,9 @@ const Projects = () => {
           },
         }
       );
-      fetchProject()
-      setUdate((prev)=>!prev)
+      localStorage.setItem("project", "true");
+      fetchProject();
+      setUdate((prev) => !prev);
       showSuccessNotification();
     } catch (error) {
       console.log(error);
@@ -160,7 +168,7 @@ const Projects = () => {
     console.log(projectId);
     try {
       const { data } = await axios.patch(
-        `http://localhost:8080/api/v1/users/update-project/${projectId}`,
+        `https://porifolio-builder-backend-1.onrender.com/api/v1/users/update-project/${projectId}`,
         updatedData,
         {
           headers: {
@@ -168,7 +176,7 @@ const Projects = () => {
           },
         }
       );
-      
+
       showSuccessNotification();
     } catch (error) {
       console.log(error);
@@ -177,16 +185,18 @@ const Projects = () => {
       setLoading(false);
     }
   };
-  if(loading1){
-    return <Flex justify="center" align="center" height="100vh">
-    <Spinner
-      thickness="4px"
-      speed="0.65s"
-      emptyColor="gray.200"
-      color="blue.500"
-      size="xl"
-    />
-  </Flex>
+  if (loading1) {
+    return (
+      <Flex justify="center" align="center" height="100vh">
+        <Spinner
+          thickness="4px"
+          speed="0.65s"
+          emptyColor="gray.200"
+          color="blue.500"
+          size="xl"
+        />
+      </Flex>
+    );
   }
 
   return (
@@ -225,6 +235,7 @@ const Projects = () => {
                     type="text"
                     className="w-[100%] border-2 rounded-lg h-[45px] p-2"
                     value={projectDat.projectTitle}
+                    max={138}
                     onChange={(e) =>
                       setProjectDat({
                         ...projectDat,
@@ -239,12 +250,14 @@ const Projects = () => {
                   <textarea
                     className="w-[100%] border-2 rounded-lg h-[170px] p-5"
                     value={projectDat.projectDescription}
-                    onChange={(e) =>
-                      setProjectDat({
-                        ...projectDat,
-                        projectDescription: e.target.value,
-                      })
-                    }
+                    onChange={(e) => {
+                      if (e.target.value.length <=200) {
+                        setProjectDat({
+                          ...projectDat,
+                          projectDescription: e.target.value,
+                        });
+                      }
+                    }}
                   />
                 </div>
 
@@ -396,6 +409,7 @@ const Projects = () => {
                   <textarea
                     className="w-[100%] border-2 rounded-lg h-[170px] p-5"
                     value={project.projectDescription}
+                    
                     onChange={(e) =>
                       setGetProject((prevProjects) =>
                         prevProjects.map((p) =>
@@ -508,12 +522,14 @@ const Projects = () => {
                 </div>
 
                 <div className="flex justify-end duration-700">
-                  <button
+                  <Button
                     className="border p-2 bg-[#3F83F8] text-[white] font-bold mt-5 rounded-md hover:bg-[white] duration-700 hover:text-[black]"
                     onClick={(e) => handleUpdate(e, project._id)}
+                   
+                    
                   >
                     {loading ? "Saving..." : "Save"}
-                  </button>
+                  </Button>
                 </div>
               </AccordionPanel>
             </AccordionItem>
@@ -532,9 +548,9 @@ const Projects = () => {
         className="w-[100%] mt-[50px] cursor-pointer border-2 rounded-lg h-[45px] p-2 text-[#3F83F8]"
       />
       <div className="border-3 p-2 mt-5 flex place-content-end">
-        <button className="bg-[#3F83F8] border-3 p-4 mt-5 tex-[20px] font-bold text-[white] rounded-lg">
+        <Link to={"/skills"} className="bg-[#3F83F8] border-3 p-4 mt-5 tex-[20px] font-bold text-[white] rounded-lg">
           Continue
-        </button>
+        </Link>
       </div>
     </>
   );

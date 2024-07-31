@@ -63,7 +63,7 @@ export function LoginModal({ isOpen, onClose }) {
     dispatch(loading());
     try {
       const { data } = await axios.post(
-        "http://localhost:8080/api/v1/users/login",
+        "https://porifolio-builder-backend-1.onrender.com/api/v1/users/login",
         loginData
       );
 
@@ -78,7 +78,7 @@ export function LoginModal({ isOpen, onClose }) {
       dispatch(updataAuth(data.token));
 
       const token = JSON.parse(localStorage.getItem("token"));
-      const userData = await axios.get("http://localhost:8080/api/v1/users/getuser", {
+      const userData = await axios.get("https://porifolio-builder-backend-1.onrender.com/api/v1/users/getuser", {
         headers: {
           'Authorization': `Bearer ${token}`,
         },

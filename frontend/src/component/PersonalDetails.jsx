@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { MdOutlineCloudDone } from "react-icons/md";
-import { MdOutlineEdit } from "react-icons/md";
-import { useSelector } from "react-redux";
+import { MdOutlineCloudDone, MdOutlineEdit } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
 import { GenerateModal } from "./GenerateModal";
-import { Button, useDisclosure } from "@chakra-ui/react";
-import { FiArrowDown, FiPhone } from "react-icons/fi";
-import { IoIosArrowRoundDown } from "react-icons/io";
-import { useToast } from "@chakra-ui/react";
+import { Button, useDisclosure, useToast } from "@chakra-ui/react";
+import { FiArrowDown } from "react-icons/fi";
 import axios from "axios";
-import { IoIosCloudOutline } from "react-icons/io";
+import { update_details, update_project } from "../redux/isFilled/actionCreator";
+
 const PersonalDetails = () => {
   const stateSign = useSelector((state) => state.signIn);
   const [personalDetails, setPersonalDetails] = useState({
@@ -23,21 +21,21 @@ const PersonalDetails = () => {
   const [data, setData] = useState({});
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
   const toast = useToast();
+  const state = useSelector((state) => state.isFilled);
+
 
   const handleSubmit = async () => {
     setLoading((prev) => !prev);
     try {
       const { data } = await axios.post(
-        "http://localhost:8080/api/v1/users/personalDetails",
+        "https://porifolio-builder-backend-1.onrender.com/api/v1/users/personalDetails",
         personalDetails
       );
       setLoading((prev) => !prev);
-      // if (!data.data.success) {
-      //   console.log(data.message);
-      //   alert(data.message);
-      // }
       showSuccessNotification();
+      localStorage.setItem("personal_details", true);
     } catch (error) {
       setLoading((prev) => !prev);
       showErrorNotification();
@@ -47,7 +45,7 @@ const PersonalDetails = () => {
 
   const showSuccessNotification = () => {
     toast({
-      title: "Personal details saved Successful",
+      title: "Personal details saved successfully",
       description: "",
       status: "success",
       duration: 5000,
@@ -58,7 +56,7 @@ const PersonalDetails = () => {
 
   const showErrorNotification = () => {
     toast({
-      title: "Invalid Credential",
+      title: "Invalid Credentials",
       description: "Something went wrong",
       status: "error",
       duration: 5000,
@@ -69,23 +67,16 @@ const PersonalDetails = () => {
 
   async function getPersonalDetailsData() {
     const token = JSON.parse(localStorage.getItem("token"));
-    console.log(token);
+    
     try {
       const { data } = await axios.get(
-        "http://localhost:8080/api/v1/users/personalDetails",
+        "https://porifolio-builder-backend-1.onrender.com/api/v1/users/personalDetails",
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      console.log(data);
-      if (!data.data.success) {
-        console.log(data.message);
-        
-      }
-      console.log(data.data.email);
-
       setPersonalDetails({
         ...personalDetails,
         fullName: data.data.fullName,
@@ -99,6 +90,7 @@ const PersonalDetails = () => {
       console.log(error);
     }
   }
+
   useEffect(() => {
     getPersonalDetailsData();
   }, []);

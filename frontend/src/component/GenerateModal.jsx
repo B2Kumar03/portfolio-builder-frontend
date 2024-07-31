@@ -34,13 +34,13 @@ export function GenerateModal({ onOpen, isOpen, onClose }) {
     skills: [],
     experience: 0,
   });
-  console.log(generate);
-  console.log([...skills]);
+  
+  
   async function generateDetails() {
     setLoading((prev) => !prev);
     try {
       const { data } = await axios.post(
-        "http://localhost:8080/api/v1/users/generate-details",
+        "https://porifolio-builder-backend-1.onrender.com/api/v1/users/generate-details",
         generate
       );
       setText(data.message);

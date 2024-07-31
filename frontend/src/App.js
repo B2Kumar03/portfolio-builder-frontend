@@ -22,7 +22,7 @@ function App() {
     try {
       const token = JSON.parse(localStorage.getItem("token"));
       const { data } = await axios.get(
-        "http://localhost:8080/api/v1/users/getuser",
+        "https://porifolio-builder-backend-1.onrender.com/api/v1/users/getuser",
         {
           headers: {
             Authorization: `Bearer ${token}`,

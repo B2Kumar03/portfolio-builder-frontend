@@ -2,12 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useToast } from "@chakra-ui/react";
 import { MdOutlineCloudDone } from "react-icons/md";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { update_resume } from "../redux/isFilled/actionCreator";
 
 const UploadResume = () => {
   const toast = useToast();
   const [resume, setResume] = useState(null);
   const [resumeUrl, setResumeUrl] = useState("");
   const [loading, setLoading] = useState(false);
+  const state = useSelector((state) => state.isFilled);
+  const dispatch = useDispatch();
 
   const handleFileChange = (e) => {
     setResume(e.target.files[0]);
@@ -27,11 +31,20 @@ const UploadResume = () => {
     }
 
     const formData = new FormData();
-    formData.append("url", resume);
+    formData.append("url", resume); // Ensure this key matches your backend API expectations
 
-    const token = JSON.parse(localStorage.getItem("token"));
-    console.log("Token:", token);
-    console.log("Form Data:", formData);
+    const token = JSON.parse(localStorage.getItem("token") || "{}");
+    if (!token) {
+      toast({
+        title: "Error",
+        description: "User is not authenticated",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-right",
+      });
+      return;
+    }
 
     const toastId = toast({
       title: "Uploading...",
@@ -45,7 +58,7 @@ const UploadResume = () => {
     setLoading(true);
     try {
       const { data } = await axios.post(
-        "http://localhost:8080/api/v1/users/upload-resume",
+        "https://porifolio-builder-backend-1.onrender.com/api/v1/users/upload-resume", // Updated URL
         formData,
         {
           headers: {
@@ -54,8 +67,9 @@ const UploadResume = () => {
           },
         }
       );
-      
+
       setResumeUrl(data.data.url);
+      localStorage.setItem("resume", "true");
       setLoading(false);
       toast.update(toastId, {
         title: "Resume uploaded successfully",
@@ -68,11 +82,12 @@ const UploadResume = () => {
     } catch (error) {
       console.error("Upload Error:", error);
       setLoading(false);
+      const errorMessage = error.response
+        ? error.response.data.message
+        : "Failed to upload resume";
       toast.update(toastId, {
         title: "Error",
-        description: error.response
-          ? error.response.data.message
-          : "Failed to upload resume",
+        description: errorMessage,
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -83,26 +98,41 @@ const UploadResume = () => {
 
   useEffect(() => {
     async function fetchResume() {
-      const token = JSON.parse(localStorage.getItem("token"));
+      const token = JSON.parse(localStorage.getItem("token") || "{}");
+      if (!token) {
+        toast({
+          title: "Error",
+          description: "User is not authenticated",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "top-right",
+        });
+        return;
+      }
+
       try {
         const { data } = await axios.get(
-          "http://localhost:8080/api/v1/users/get-resume",
+          "https://porifolio-builder-backend-1.onrender.com/api/v1/users/get-resume",
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
-        console.log("Resume Data:", data.data);
-        setResumeUrl(data.data.url);
+
+        if (data.data) {
+          dispatch(update_resume());
+          setResumeUrl(data.data.url);
+        }
       } catch (error) {
         console.error("Resume Error:", error);
-
+        const errorMessage = error.response
+          ? error.response.data.message
+          : "Failed to fetch resume";
         toast({
           title: "Error",
-          description: error.response
-            ? error.response.data.message
-            : "Failed to fetch resume",
+          description: errorMessage,
           status: "error",
           duration: 5000,
           isClosable: true,
@@ -111,7 +141,7 @@ const UploadResume = () => {
       }
     }
     fetchResume();
-  }, [toast]);
+  }, [toast, dispatch]);
 
   const handleUpdate = () => {
     setResume(null);
@@ -143,7 +173,7 @@ const UploadResume = () => {
       <div className="border-3 p-2 mt-5 flex place-content-end">
         <button
           onClick={handleUpload}
-          className="bg-[#3F83F8] border-3 p-4 mt-5 tex-[20px] font-bold text-[white] rounded-lg mr-2"
+          className="bg-[#3F83F8] border-3 p-4 mt-5 text-[20px] font-bold text-[white] rounded-lg mr-2"
           disabled={loading}
         >
           {loading ? "Uploading..." : resumeUrl ? "Update Resume" : "Upload Resume"}
@@ -151,7 +181,7 @@ const UploadResume = () => {
         {resumeUrl && (
           <button
             onClick={handleUpdate}
-            className="bg-red-500 border-3 p-4 mt-5 tex-[20px] font-bold text-[white] rounded-lg"
+            className="bg-red-500 border-3 p-4 mt-5 text-[20px] font-bold text-[white] rounded-lg"
             disabled={loading}
           >
             Clear

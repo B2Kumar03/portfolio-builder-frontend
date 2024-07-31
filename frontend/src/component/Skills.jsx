@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useToast } from "@chakra-ui/react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { MdOutlineCloudDone } from "react-icons/md";
+import { update_skill } from "../redux/isFilled/actionCreator";
 
 const techStackIcons = {
   HTML: "https://www.vectorlogo.zone/logos/w3_html5/w3_html5-icon.svg",
@@ -41,18 +42,24 @@ const Skills = () => {
   const toast = useToast();
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("Frontend");
+  const [loading,setLoading]=useState(false)
+  const state1=useSelector((state)=>state.isFilled)
+  const dispatch=useDispatch()
 
   useEffect(() => {
     const fetchSkills = async () => {
       const token = JSON.parse(localStorage.getItem("token"));
       try {
-        const { data } = await axios.get("http://localhost:8080/api/v1/users/get-skill", {
+        const { data } = await axios.get("https://porifolio-builder-backend-1.onrender.com/api/v1/users/get-skill", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
+        if(data){
+          dispatch(update_skill())
+        }
         setSelectedSkills(data.skills.skillsName);
-        console.log(data.skills.skillsName);
+        
       } catch (error) {
         toast({
           title: "Error",
@@ -80,10 +87,11 @@ const Skills = () => {
   const handleSubmit = async () => {
     const token = JSON.parse(localStorage.getItem("token"));
     const skillsUrl = selectedSkills.map((skill) => techStackIcons[skill]);
-      console.log(selectedSkills);
+    
+      setLoading((prev)=>!prev)
     try {
       await axios.post(
-        "http://localhost:8080/api/v1/users/skills",
+        "https://porifolio-builder-backend-1.onrender.com/api/v1/users/skills",
         {
           skillsUrl,
           skillsName: selectedSkills,
@@ -96,6 +104,8 @@ const Skills = () => {
           },
         }
       );
+      localStorage.setItem("skill", "true");
+      setLoading((prev)=>!prev)
       toast({
         title: "Skills saved successfully",
         status: "success",
@@ -104,6 +114,7 @@ const Skills = () => {
         position: "top-right",
       });
     } catch (error) {
+      setLoading((prev)=>!prev)
       toast({
         title: "Error",
         description: "Failed to save skills",
@@ -126,7 +137,7 @@ const Skills = () => {
           </div>
         </div>
       </div>
-      <div>
+      <div className="border p-5 rounded">
         <label htmlFor="">Select Role :</label>
         <select
           
@@ -172,7 +183,7 @@ const Skills = () => {
           onClick={handleSubmit}
           className="bg-[#3F83F8] border-3 p-4 mt-5 tex-[20px] font-bold text-[white] rounded-lg"
         >
-          Save Skills
+          {loading?"Saving...":"Save Skills"}
         </button>
       </div>
     </div>
